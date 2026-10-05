@@ -9,4 +9,4 @@ trains and promotes models** — everyone else reads this file.
 
 | Date | MLflow run ID | Git commit | Data hash | Model MAE | Beats baseline? | Promoted to MODEL_URI? |
 |---|---|---|---|---|---|---|
-| [fill in] | `6975ce4aba17459fa68fcc3e7022b44c` | `no-git` (fill in after first commit) | `7ea3ae080dab` | 2.45 | yes | [ ] |
+| 2026-10-05 | `12c99969d67140c1ad7d3ec1d11b522f` | `2a7db16` | `7ea3ae080dab` | 2.45 | yes | [ ] |

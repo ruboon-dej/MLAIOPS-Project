@@ -1,8 +1,8 @@
 # Model Card — ED Occupancy Forecaster
 
 **Model:** RandomForestRegressor, 1-hour-ahead ED occupancy
-**Version:** run `6975ce4aba17459fa68fcc3e7022b44c` (fill in your own after retraining)
-**Date trained:** [fill in]
+**Version:** run `12c99969d67140c1ad7d3ec1d11b522f` (git commit `2a7db16`)
+**Date trained:** 2026-10-05
 **Owners:** Suppavich Rattanamanotham (modeling), Phatpharid Phattaranawig (data pipeline)
 
 ## Intended use
