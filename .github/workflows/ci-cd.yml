@@ -1,0 +1,72 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write   # required for Workload Identity Federation
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Audit src/ for hardcoded cloud references
+        run: make audit-src
+
+      - name: Validate data
+        run: make validate
+
+      - name: Run tests (includes failure-demo CI tests)
+        run: make test
+
+      # This step is what makes failure demo 2 real in CI, not just locally:
+      # a PR that breaks validation fails here and blocks merge/deploy.
+      - name: Train model (smoke test — fails the build if training errors)
+        run: make train
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Workload Identity Federation — no key file, ever.
+      # Set these three repo secrets/vars before this will work:
+      #   WIF_PROVIDER   = projects/.../workloadIdentityPools/.../providers/...
+      #   DEPLOYER_SA    = deployer@<project-id>.iam.gserviceaccount.com
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ vars.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build -t ${{ vars.REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/ed-forecaster/scorer:${{ github.sha }} .
+
+      - name: Push image
+        run: docker push ${{ vars.REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/ed-forecaster/scorer:${{ github.sha }}
+
+      - name: Update Cloud Run Job
+        run: |
+          gcloud run jobs update ed-occupancy-scorer \
+            --image ${{ vars.REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/ed-forecaster/scorer:${{ github.sha }} \
+            --region ${{ vars.REGION }}

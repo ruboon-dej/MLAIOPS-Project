@@ -1,0 +1,21 @@
+# secrets — never commit these (automatic deduction per the brief)
+cloud.env
+*.json
+!cloud.env.example
+!docs/*.json
+
+# generated / local-only
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+mlflow.db
+mlruns/
+data/live/
+data/local_cloud/
+data/reports/
+data/models/
+data/bad_input*.csv
+
+# keep the real dataset and its dictionary — these ARE the source data
+!data/ed_timeseries.csv
