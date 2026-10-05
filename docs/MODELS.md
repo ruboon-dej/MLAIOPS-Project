@@ -9,6 +9,6 @@ trains and promotes models** — everyone else reads this file.
 
 | Date | MLflow run ID | Git commit | Data hash | Model MAE | Beats baseline? | Promoted to MODEL_URI? |
 |---|---|---|---|---|---|---|
-| 2026-10-05 | `12c99969d67140c1ad7d3ec1d11b522f` | `2a7db16` | `7ea3ae080dab` | 2.45 | yes | [ ] |
+| 2026-10-05 | `2ba7a0d1e62f4da6867ef0dcd6b7a93d` | `fe0c1c4` | `7ea3ae080dab` | 2.45 | yes | [ ] |
 
 Note: the deploy job in CI retrains from the same code, data and seed (random_state=42), so the deployed model has the same metrics but a different run ID. The official reference run is the one in the table above.
