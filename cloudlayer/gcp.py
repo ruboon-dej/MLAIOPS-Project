@@ -53,6 +53,7 @@ class GCPAdapter(CloudAdapter):
         series = monitoring_v3.TimeSeries()
         series.metric.type = f"custom.googleapis.com/{self.metrics_namespace}/{name}"
         series.resource.type = "global"
+        series.resource.labels["project_id"] = self.project_id
         for k, v in labels.items():
             series.metric.labels[k] = str(v)
 

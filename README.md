@@ -41,7 +41,7 @@ tests/
   test_validate.py        — validation must reject bad input (failure demo 2)
   test_freshness.py        — guard must refuse stale input (failure demo 1)
 docs/
-  model_card_template.md    — fill in after first real training run
+  model_card.md, MODELS.md, gcp_setup.md — model card, official run log, GCP runbook
 scripts/
   failure_demo.sh             — orchestrates both demos for the live presentation
 ```

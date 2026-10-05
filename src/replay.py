@@ -24,6 +24,9 @@ from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from cloudlayer import get_adapter  # noqa: E402
+
 SOURCE = Path("data/ed_timeseries.csv")
 LIVE_DIR = Path("data/live")
 LIVE_FILE = LIVE_DIR / "latest.csv"
@@ -46,6 +49,7 @@ def main():
     df = pd.read_csv(SOURCE, parse_dates=["timestamp"]).sort_values("timestamp").reset_index(drop=True)
     LIVE_DIR.mkdir(parents=True, exist_ok=True)
 
+    adapter = get_adapter()
     history_rows = []
     emitted = 0
 
@@ -65,6 +69,10 @@ def main():
         history_df.to_csv(HISTORY_FILE, index=False)
 
         pd.DataFrame([row]).to_csv(LIVE_FILE, index=False)
+        # With CLOUD_PROVIDER=gcp this puts the feed where the Cloud Run job can read it.
+        # With the local adapter it just copies into data/local_cloud/.
+        adapter.upload(str(LIVE_FILE), "live/latest.csv")
+        adapter.upload(str(HISTORY_FILE), "live/history.csv")
 
         emitted += 1
         print(

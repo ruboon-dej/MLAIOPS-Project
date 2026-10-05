@@ -41,6 +41,17 @@ def main():
     adapter = get_adapter()
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
+    # In the cloud the job has no local feed, so fetch it from the bucket first.
+    if os.environ.get("LIVE_FEED_SOURCE", "local") == "bucket":
+        LIVE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            adapter.download("live/latest.csv", str(LIVE_FILE))
+            adapter.download("live/history.csv", str(HISTORY_FILE))
+        except Exception as exc:
+            print(f"REFUSE: could not fetch live feed: {exc}", file=sys.stderr)
+            adapter.emit_metric("ed_forecast_state", 0, {"state": "refuse", "reason": "no_feed"})
+            sys.exit(1)
+
     if not LIVE_FILE.exists():
         print("REFUSE: no live feed found — is `make replay` running?", file=sys.stderr)
         adapter.emit_metric("ed_forecast_state", 0, {"state": "refuse", "reason": "no_feed"})
@@ -86,6 +97,10 @@ def main():
         "scoring_latency_seconds": round(elapsed, 2),
         "within_deadline": elapsed <= DEADLINE_SECONDS,
     }
+
+    lineage_file = MODEL_URI / "lineage.json"
+    if lineage_file.exists():
+        report["lineage"] = json.loads(lineage_file.read_text())
 
     report_path = REPORT_DIR / f"forecast_{int(time.time())}.json"
     with open(report_path, "w") as f:

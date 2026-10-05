@@ -27,7 +27,8 @@ gcloud services enable \
   logging.googleapis.com \
   iam.googleapis.com \
   iamcredentials.googleapis.com \
-  cloudbilling.googleapis.com
+  cloudbilling.googleapis.com \
+  billingbudgets.googleapis.com
 ```
 
 ## 2. Create the three service accounts (architecture.md section 4)
@@ -55,6 +56,12 @@ gcloud storage buckets create "$BUCKET" \
 gcloud artifacts repositories create "$REPO_NAME" \
   --repository-format=docker \
   --location="$REGION"
+
+# Labels: teardown and cost-report depend on these
+gcloud storage buckets update "$BUCKET" \
+  --update-labels=course=itcs355,student=${STUDENT_ID},lab=capstone
+gcloud artifacts repositories update "$REPO_NAME" --location="$REGION" \
+  --update-labels=course=itcs355,student=${STUDENT_ID},lab=capstone
 ```
 
 ## 4. Grant roles (narrowest scope — matches architecture.md's permissions table)
@@ -98,6 +105,7 @@ gcloud iam workload-identity-pools providers create-oidc "github-provider" \
   --workload-identity-pool="github-pool" \
   --display-name="GitHub provider" \
   --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
+  --attribute-condition="assertion.repository=='ruboon-dej/MLAIOPS-Project'" \
   --issuer-uri="https://token.actions.githubusercontent.com"
 
 # Restrict to YOUR repo only
@@ -111,14 +119,22 @@ Then, in your GitHub repo settings → Secrets and variables → Actions, set:
 - **Secret** `DEPLOYER_SA`: `$DEPLOYER_SA`
 - **Variable** `PROJECT_ID`, **Variable** `REGION`
 
-## 6. Create the Cloud Run Job (first deploy — after CI/CD pushes an image)
+## 6. Create the Cloud Run Job (after the first CI push)
+
+The first push to `main` builds and pushes the image, then fails at
+"Update Cloud Run Job" because the job does not exist yet. That is expected.
+Find the pushed image tag (CI tags by commit sha, there is no `:latest`):
 
 ```bash
+gcloud artifacts docker images list ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
+export IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/scorer:PASTE_SHA_HERE"
+
 gcloud run jobs create ed-occupancy-scorer \
-  --image="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/scorer:latest" \
+  --image="$IMAGE" \
   --region="$REGION" \
   --service-account="$RUNTIME_SA" \
-  --set-env-vars="CLOUD_PROVIDER=gcp,PROJECT_ID=${PROJECT_ID},BLOB_URI=${BUCKET},FRESH_OK_MINUTES=60,FRESH_STALE_MINUTES=120,SCORE_DEADLINE_MINUTES=5,METRICS_NAMESPACE=itcs355" \
+  --memory=2Gi --cpu=1 \
+  --set-env-vars="CLOUD_PROVIDER=gcp,PROJECT_ID=${PROJECT_ID},BLOB_URI=${BUCKET},LIVE_FEED_SOURCE=bucket,MODEL_URI=data/models/latest,FRESH_OK_MINUTES=60,FRESH_STALE_MINUTES=120,SCORE_DEADLINE_MINUTES=5,METRICS_NAMESPACE=itcs355" \
   --labels="course=itcs355,student=${STUDENT_ID},lab=capstone" \
   --max-retries=0 \
   --task-timeout=300
@@ -128,6 +144,15 @@ gcloud run jobs add-iam-policy-binding ed-occupancy-scorer \
   --region="$REGION" \
   --member="serviceAccount:${INVOKER_SA}" \
   --role="roles/run.invoker"
+```
+
+Then in GitHub, re-run the failed deploy job. Later pushes update the job automatically.
+
+Before the job can score anything, put a feed in the bucket from a laptop
+(needs `gcloud auth application-default login`):
+
+```bash
+CLOUD_PROVIDER=gcp PROJECT_ID=$PROJECT_ID BLOB_URI=$BUCKET python3 src/replay.py --interval-seconds 5 --limit 3
 ```
 
 ## 7. Create the Cloud Scheduler job
@@ -142,6 +167,9 @@ gcloud scheduler jobs create http ed-occupancy-hourly \
   --uri="https://${REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${PROJECT_ID}/jobs/ed-occupancy-scorer:run" \
   --http-method=POST \
   --oauth-service-account-email="$INVOKER_SA"
+
+gcloud scheduler jobs update http ed-occupancy-hourly --location="$REGION" \
+  --update-labels=course=itcs355,student=${STUDENT_ID},lab=capstone
 ```
 
 ## 8. Billing budget alert

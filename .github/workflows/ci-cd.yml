@@ -56,6 +56,18 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
+      # data/models/ is gitignored, so the fresh runner has no model to bake into
+      # the image. Train here so the Dockerfile's COPY has something to copy.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train model for the image
+        run: make train
+
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ vars.REGION }}-docker.pkg.dev --quiet
 
