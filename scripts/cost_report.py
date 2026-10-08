@@ -3,7 +3,7 @@
     python scripts/cost_report.py --estimate 150 --actual 42 --days 14 \
         --storage 6 --serving 0 --pipeline 0 --monitoring 0 --other 36
 
-Writes reports/lab5-cost.md with the six sections Lab 5 Task 5 requires.
+Writes reports/cost-report.md with the six sections Lab 5 Task 5 requires.
 All figures are THB, typed in from Billing (Reports, filtered to the project
 and grouped by service). This script does not call any billing API.
 
@@ -36,7 +36,7 @@ def main() -> int:
     ap.add_argument("--pipeline", type=float, default=0.0, help="Scheduler, CI related")
     ap.add_argument("--monitoring", type=float, default=0.0, help="Cloud Monitoring + Logging")
     ap.add_argument("--other", type=float, default=0.0)
-    ap.add_argument("--out", type=Path, default=Path("reports/lab5-cost.md"))
+    ap.add_argument("--out", type=Path, default=Path("reports/cost-report.md"))
     args = ap.parse_args()
 
     gap = args.actual - args.estimate
@@ -49,7 +49,7 @@ def main() -> int:
         for u in UTILISATIONS
     )
 
-    content = f"""# Lab 5 cost report (capstone, hourly batch job)
+    content = f"""# Cost report (capstone, hourly batch job)
 
 Project `itcs355-edforecast` · region `asia-southeast1` · {args.runs_per_month} scheduled runs per month
 
