@@ -168,8 +168,6 @@ gcloud scheduler jobs create http ed-occupancy-hourly \
   --http-method=POST \
   --oauth-service-account-email="$INVOKER_SA"
 
-gcloud scheduler jobs update http ed-occupancy-hourly --location="$REGION" \
-  --update-labels=course=itcs355,student=${STUDENT_ID},lab=capstone
 ```
 
 ## 8. Billing budget alert
