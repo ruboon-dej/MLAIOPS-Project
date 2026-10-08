@@ -19,7 +19,7 @@ free tiers, and Cloud Storage and Artifact Registry billed 0.00 THB at this data
 size. All 0.27 THB came from Cloud Run, and it appears only on 5, 6 and 7 October,
 so it likely reflects setup, test runs and failure demos rather than the steady
 hourly schedule. Caveats: only 4 days of billing exist, so the monthly projection
-(about 2.03 THB) is rough, and these figures are before the free trial credit, which
+(about 2.03 THB) is rough and assumes the hourly schedule is enabled for the whole month (it is currently paused), and these figures are before the free trial credit, which
 covered them (net bill 0.00 THB). Without the credit the cost would be about
 2.03 THB per month, still below the low end of the proposal range.
 
