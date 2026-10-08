@@ -58,3 +58,5 @@ See `docs/gcp_setup.md` for the full annotated version with the exact `gcloud` c
 5. Push to GitHub → GitHub Actions builds the image, runs tests, deploys the Cloud Run Job.
 6. Create the Cloud Scheduler job pointing at it.
 7. `make cost-report` before submission, then `make teardown`.
+
+Deliberate failure write-up: [docs/failure-mode.md](docs/failure-mode.md)
