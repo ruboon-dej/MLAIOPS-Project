@@ -52,7 +52,7 @@ cost-report:
 	@echo "Not implemented in this sandbox. See docs/gcp_setup.md."
 
 portability-audit:
-	@echo "portability-audit: course-provided target, copy in from course repo"
+	python scripts/portability_audit.py
 
 clean:
 	rm -rf data/live data/local_cloud data/reports mlflow.db .pytest_cache
