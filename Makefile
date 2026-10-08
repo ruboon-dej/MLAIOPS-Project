@@ -48,11 +48,10 @@ teardown:
 	@bash scripts/teardown.sh
 
 cost-report:
-	@echo "cost-report: pulls billing data filtered by project labels"
-	@echo "Not implemented in this sandbox. See docs/gcp_setup.md."
+	python3 scripts/cost_report.py $(COST_ARGS)
 
 portability-audit:
-	python scripts/portability_audit.py
+	python3 scripts/portability_audit.py
 
 clean:
 	rm -rf data/live data/local_cloud data/reports mlflow.db .pytest_cache
