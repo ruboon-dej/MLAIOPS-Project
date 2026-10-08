@@ -42,12 +42,10 @@ failure-demo:
 # --- GCP-side targets: require cloud.env to be filled in and gcloud auth ---
 
 cloud-check:
-	@echo "cloud-check: verify service accounts, bucket, Artifact Registry repo exist"
-	@echo "Not implemented in this sandbox — run against your real GCP project. See docs/gcp_setup.md"
+	@bash scripts/cloud_check.sh
 
 teardown:
-	@echo "teardown: deletes every resource labelled course=itcs355,student=$${STUDENT_ID}"
-	@echo "Not implemented in this sandbox. See docs/gcp_setup.md for the gcloud commands."
+	@bash scripts/teardown.sh
 
 cost-report:
 	@echo "cost-report: pulls billing data filtered by project labels"
