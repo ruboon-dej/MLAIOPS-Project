@@ -205,11 +205,12 @@ make train
 
 | Target | Status |
 |---|---|
-| `make setup`, `make validate`, `make train`, `make test`, `make audit-src` | exist in this repo |
-| `make cloud-check`, `make teardown`, `make cost-report`, `make portability-audit` | provided by the course repo, not yet copied in |
-| `make score`, `make replay`, `make deploy`, `make failure-demo` | do not exist yet |
+| `make setup`, `make validate`, `make train`, `make test`, `make audit-src` | implemented in this repo |
+| `make replay`, `make replay-fast`, `make score`, `make failure-demo` | implemented in this repo |
+| `make cloud-check`, `make teardown`, `make cost-report`, `make portability-audit` | implemented in this repo |
+| GCP deployment | handled by GitHub Actions in `.github/workflows/ci-cd.yml` after CI passes on `main` |
 
-The four missing targets are the main work of the project. Everything above them is scaffolding, and this document describes the target design, not finished work.
+The local workflow, cloud operational checks, and portability audit are implemented in this repository. Deployment is handled by GitHub Actions rather than a `make deploy` target. See the README and CI/CD workflow for the current commands and deployment process.
 
 ## 9. Where the abstraction leaks
 

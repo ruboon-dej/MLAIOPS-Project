@@ -8,8 +8,9 @@ See `architecture.md` for the full design. This README covers how to actually ru
 | Target | Status |
 |---|---|
 | `make setup`, `make validate`, `make train`, `make test`, `make audit-src` | implemented |
-| `make replay`, `make score`, `make failure-demo` | implemented (local/laptop mode) |
-| `make deploy`, `make cloud-check`, `make teardown`, `make cost-report` | GCP-side, see "Cloud deployment" below |
+| `make replay`, `make replay-fast`, `make score`, `make failure-demo` | implemented (local/laptop mode) |
+| `make cloud-check`, `make teardown`, `make cost-report`, `make portability-audit` | GCP-side, see "Cloud deployment" below |
+| GitHub Actions (`.github/workflows/ci-cd.yml`) | deploys to GCP after CI passes on `main` |
 
 ## Quickstart (local, no cloud needed)
 
