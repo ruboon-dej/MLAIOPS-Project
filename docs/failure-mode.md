@@ -15,3 +15,6 @@ The first version of the guard was covered only by unit tests on `check_freshnes
 
 ## Scope
 We guard against stale data, and against an unreadable or malformed latest row, which is refused with `REFUSE: unreadable feed: <reason>` and covered by `test_malformed_feed_is_refused_with_a_named_cause`. We do not claim a distribution or frozen-column check.
+
+## Second case: malformed input (observed 2026-10-09)
+A latest row with an unparseable timestamp first crashed the job with a bare `AttributeError` traceback. After the fix, Cloud Run logs show `REFUSE: unreadable feed: DateParseError: Unknown datetime string format, unable to parse: not-a-date` followed by exit code 1, and the job recovers on the next good row.
