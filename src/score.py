@@ -57,8 +57,18 @@ def main():
         adapter.emit_metric("ed_forecast_state", 0, {"state": "refuse", "reason": "no_feed"})
         sys.exit(1)
 
-    latest = pd.read_csv(LIVE_FILE, parse_dates=["timestamp"]).iloc[0]
-    result = check_freshness(latest["timestamp"].to_pydatetime())
+    try:
+        latest = pd.read_csv(LIVE_FILE, parse_dates=["timestamp"]).iloc[0]
+        latest_ts = pd.Timestamp(latest["timestamp"])
+        if pd.isna(latest_ts):
+            raise ValueError("timestamp is empty")
+        latest_ts = latest_ts.to_pydatetime()
+        int(latest["occupancy"])
+    except Exception as exc:
+        print(f"REFUSE: unreadable feed: {type(exc).__name__}: {exc}", file=sys.stderr)
+        adapter.emit_metric("ed_forecast_state", 0, {"state": "refuse", "reason": "bad_feed"})
+        sys.exit(1)
+    result = check_freshness(latest_ts)
 
     adapter.emit_metric("ed_data_age_minutes", result.age_minutes, {"state": result.state.value})
 

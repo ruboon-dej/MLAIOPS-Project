@@ -14,4 +14,4 @@ The first version of the guard was covered only by unit tests on `check_freshnes
 - Weakening the refuse state in `freshness.py`: three tests fail in `tests/test_freshness.py`.
 
 ## Scope
-We guard against stale data only. We do not claim a distribution or frozen-column check.
+We guard against stale data, and against an unreadable or malformed latest row, which is refused with `REFUSE: unreadable feed: <reason>` and covered by `test_malformed_feed_is_refused_with_a_named_cause`. We do not claim a distribution or frozen-column check.

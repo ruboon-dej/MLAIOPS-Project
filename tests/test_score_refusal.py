@@ -41,3 +41,17 @@ def test_stale_feed_is_not_scored(tmp_path):
 def test_fresh_feed_passes_the_guard(tmp_path):
     proc = _run_score(tmp_path, age_minutes=5)
     assert "REFUSE" not in proc.stderr
+
+
+def test_malformed_feed_is_refused_with_a_named_cause(tmp_path):
+    live = tmp_path / "data" / "live"
+    live.mkdir(parents=True)
+    for name in ("latest.csv", "history.csv"):
+        (live / name).write_text("timestamp,occupancy\nnot-a-date,abc\n")
+    env = {**os.environ, "CLOUD_PROVIDER": "local", "LIVE_FEED_SOURCE": "local",
+           "FRESH_OK_MINUTES": "60", "FRESH_STALE_MINUTES": "120"}
+    proc = subprocess.run([sys.executable, str(SCORE)], cwd=tmp_path, env=env,
+                          capture_output=True, text=True, timeout=120)
+    assert proc.returncode != 0
+    assert "REFUSE: unreadable feed" in proc.stderr
+    assert "Traceback" not in proc.stderr
