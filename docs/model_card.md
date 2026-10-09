@@ -16,7 +16,7 @@ data. Features: current occupancy, arrivals/departures (1h/3h/6h), triage-level
 counts, complaint-category counts, length-of-stay stats, calendar features
 (hour-of-day via cyclical encoding, day-of-week, weekend flag). Chronological
 80/10/10 train/val/test split — never shuffled, since this is time-series data.
-Source: `data/ed_timeseries.csv`, a simulated file that ships in this repository. It contains no real patient data, so no patient-privacy constraints apply.
+Source: `data/ed_timeseries.csv`, a simulated dataset provided by another course at the university, copied into this repository. It contains no real patient data, so no patient-privacy constraints apply.
 
 ## Performance (test set, n=432)
 
