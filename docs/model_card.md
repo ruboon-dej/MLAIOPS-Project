@@ -16,6 +16,7 @@ data. Features: current occupancy, arrivals/departures (1h/3h/6h), triage-level
 counts, complaint-category counts, length-of-stay stats, calendar features
 (hour-of-day via cyclical encoding, day-of-week, weekend flag). Chronological
 80/10/10 train/val/test split — never shuffled, since this is time-series data.
+Source: `data/ed_timeseries.csv`, a simulated file that ships in this repository. It contains no real patient data, so no patient-privacy constraints apply.
 
 ## Performance (test set, n=432)
 
@@ -39,7 +40,7 @@ course**; this table exists for honesty, not to claim a breakthrough.
   none is possible, but this is a genuine gap if the data source ever changes.
 
 ## Monitoring in production
-- Freshness: see architecture.md "Freshness states" table.
+- Freshness guard, from the age of the latest input row: up to 60 minutes is normal; 60 to 120 minutes is scored and flagged as degraded; beyond 120 minutes the job refuses to score, writes no forecast and exits nonzero. Thresholds come from `FRESH_OK_MINUTES` and `FRESH_STALE_MINUTES`. The deliberate failure and its tests are in [docs/failure-mode.md](failure-mode.md).
 - `ed_data_age_minutes`, `ed_forecast_state`, `ed_scoring_latency_seconds`,
   `ed_predicted_occupancy` emitted to Cloud Monitoring per scoring run.
 - Alert: data age over 120 minutes triggers an email to the team.
