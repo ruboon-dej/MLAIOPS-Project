@@ -184,7 +184,7 @@ Term target: under 800 THB per student, with a billing budget alert set before b
 | Cloud Monitoring and Logging | Expected within free allotments at this volume |
 | Estimate | About 1 to 5 USD per month, about 1.4 to 7 USD per 1,000 predictions at 720 predictions a month |
 
-The estimate is a placeholder. The final report uses the figure from `make cost-report` for resources carrying the project labels.
+The figure above is the estimate made before running. The measured cost, from `make cost-report`, is in `reports/cost-report.md` and came in far below it.
 
 The billing budget alerts at 50, 80 and 100 percent are notifications only. They do not cap or stop spending. Someone must read them and act, by pausing the Scheduler job or running `make teardown`, if the budget is approached. Send the alerts to an address the whole team sees, and name one owner for responding.
 

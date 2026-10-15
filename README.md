@@ -42,14 +42,14 @@ tests/
   test_validate.py        — validation must reject bad input (failure demo 2)
   test_freshness.py        — guard must refuse stale input (failure demo 1)
 docs/
-  model_card.md, MODELS.md, gcp_setup.md — model card, official run log, GCP runbook
+  model_card.md, MODELS.md, gcp_setup.md, failure-mode.md — model card, official run log, GCP runbook, deliberate-failure write-up
 scripts/
   failure_demo.sh             — orchestrates both demos for the live presentation
 ```
 
 ## Cloud deployment (GCP)
 
-Not runnable from this sandbox — these are the commands to run yourself, in order.
+These are the commands to deploy and operate the system, in order.
 See `docs/gcp_setup.md` for the full annotated version with the exact `gcloud` commands.
 
 1. Create the three service accounts and grant the roles table from `architecture.md` §4.
