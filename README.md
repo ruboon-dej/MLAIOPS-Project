@@ -61,3 +61,12 @@ See `docs/gcp_setup.md` for the full annotated version with the exact `gcloud` c
 7. `make cost-report` before submission, then `make teardown`.
 
 Deliberate failure write-up: [docs/failure-mode.md](docs/failure-mode.md)
+
+## Monitoring dashboard
+
+Screenshots of the `ED Forecaster` Cloud Monitoring dashboard, 12 Oct 2026 (UTC+7).
+
+- `docs/dashboard-data-age.png`: data age in minutes. Values above 120 are refused by the guard.
+- `docs/dashboard-forecast-state.png`: forecast state, 1 when scored and 0 when refused.
+
+The 122.1 minute stale-data case of 8 Oct 2026 is documented in `docs/failure-mode.md`.
