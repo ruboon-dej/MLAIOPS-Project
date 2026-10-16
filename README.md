@@ -70,3 +70,13 @@ Screenshots of the `ED Forecaster` Cloud Monitoring dashboard, 12 Oct 2026 (UTC+
 - `docs/dashboard-forecast-state.png`: forecast state, 1 when scored and 0 when refused.
 
 The 122.1 minute stale-data case of 8 Oct 2026 is documented in `docs/failure-mode.md`.
+
+## Drift detection
+
+`src/drift.py` compares the training reference (first 80 percent of `data/ed_timeseries.csv`) with the latest 500 rows. For each numeric column it computes the population stability index (PSI) and a two-sample Kolmogorov-Smirnov test.
+
+- A column is flagged `drift` when PSI is at least 0.25 and the KS p-value is below 0.01, and `warn` when PSI is at least 0.1.
+- The decision is `retrain` when at least 30 percent of columns drift, `monitor` when any column warns or drifts, `insufficient_data` below 100 rows, and `ok` otherwise.
+- Run it with `make drift CURRENT=<csv>` or the manual `drift` GitHub Actions workflow. With `--fail-on-retrain` the process exits with code 2 when retraining is recommended.
+
+Checked on 16 Oct 2026: the committed data returns `ok` (highest PSI 0.057), and a copy with 19 columns scaled by 1.6 returns `retrain` (drift share 0.667). Thresholds are common defaults and have not been tuned. Small drifts and live cloud data have not been tested. The freshness guard in `docs/failure-mode.md` catches stale data, while this check catches changes in the data distribution.
