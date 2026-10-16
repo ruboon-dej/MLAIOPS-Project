@@ -55,3 +55,6 @@ portability-audit:
 
 clean:
 	rm -rf data/live data/local_cloud data/reports mlflow.db .pytest_cache
+
+drift:
+	python3 src/drift.py --current $(CURRENT)
